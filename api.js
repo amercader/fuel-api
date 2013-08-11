@@ -62,7 +62,11 @@ exports.search= function(req, res) {
   for (var key in req.query) {
     if (key.substring(0,5) == 'facet') {
       if (key.indexOf('.') !== -1) {
-        facetOptions[key.split('.')[1]] = req.query[key];
+        if (key == 'facet.field') {
+          facetOptions['field'] = req.query[key] + '_s';
+        } else {
+          facetOptions[key.split('.')[1]] = req.query[key];
+        }
       } else {
         facetOptions['on'] = req.query[key] == 'true';
       }
@@ -93,7 +97,7 @@ exports.search= function(req, res) {
 
       if (obj.facet_counts) {
         for (var key in obj.facet_counts.facet_fields) {
-          resObj.facets[key.replace('_s$','')] = obj.facet_counts.facet_fields[key];
+          resObj.facets[key.replace(/_s$/,'')] = obj.facet_counts.facet_fields[key];
         }
       }
 
