@@ -141,6 +141,10 @@
     <field name="date_of_change" type="text_general" indexed="true" stored="true" />
    
 
+   <!-- auto-suggest fields -->
+   <field name="manufacturer_suggest" type="text_general_edge_ngram" indexed="true" stored="false" />
+   <field name="model_suggest" type="text_general_edge_ngram" indexed="true" stored="false" />
+
    <!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
    <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
@@ -164,6 +168,9 @@
    <copyField source="manufacturer" dest="text"/>
    <copyField source="model" dest="text"/>
    <copyField source="description" dest="text"/>
+
+   <copyField source="manufacturer" dest="manufacturer_suggest"/>
+   <copyField source="model" dest="model_suggest"/>
 
     <!-- Create a string version of author for faceting -->
     <!--
@@ -318,7 +325,6 @@
       <analyzer class="org.apache.lucene.analysis.el.GreekAnalyzer"/>
     </fieldType>
     -->
-
     <!-- A text field that only splits on whitespace for exact matching of words -->
     <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100">
       <analyzer>
@@ -348,6 +354,18 @@
       </analyzer>
     </fieldType>
     
+    <fieldType name="text_general_edge_ngram" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+         <tokenizer class="solr.KeywordTokenizerFactory"/>
+         <filter class="solr.LowerCaseTokenizerFactory"/>
+         <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="15" side="front"/>
+      </analyzer>
+      <analyzer type="query">
+         <tokenizer class="solr.KeywordTokenizerFactory"/>
+         <filter class="solr.LowerCaseTokenizerFactory"/>
+      </analyzer>
+    </fieldType>
+
     <fieldtype name="phonetic" stored="false" indexed="true" class="solr.TextField" >
       <analyzer>
         <tokenizer class="solr.StandardTokenizerFactory"/>
