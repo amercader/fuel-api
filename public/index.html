@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="vendor/select2/select2.css" rel="stylesheet" media="screen">
+    <link href="vendor/select2/select2-bootstrap.css" rel="stylesheet" media="screen">
+    <link href="css/app.css" rel="stylesheet" media="screen">
+
+  </head>
+
+  <body>
+    <div class="row selects">
+      <div class="col-md-2">
+        <div name="year" id="year" class="select"></div>
+      </div>
+      <div class="col-md-2">
+        <div name="make" id="make" class="select"></div>
+      </div>
+      <div class="col-md-2">
+        <div name="model" id="model" class="select"></div>
+      </div>
+    </div>
+
+    <div id="results"></div>
+
+    <div id="compare"></div>
+
+    <script type="text/template" id="results-template">
+      {{#each results}}<div><span>{{description}}</span> - <span>({{engine_capacity}} cc)</span></div>{{/each}}
+    </script>
+    <script type="text/template" id="results-item-template">
+      <div><span>{{description}}</span> - <span>({{engine_capacity}} cc)</span></div>
+    </script>
+
+    <script type="text/template" id="compare-item-template">
+      <div><span>{{year}} {{manufacturer}} {{model}} {{description}} ({{engine_capacity}} cc, {{transmission_type}}), CO<sub>2</sub>: {{co2}}, Combined: {{combined_metric}}</div>
+    </script>
+
+
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="vendor/handlebars/handlebars.js"></script>
+    <script src="vendor/select2/select2.min.js"></script>
+
+    <script>
+    $(document).ready(function() {
+        $("#year").select2({
+          placeholder: 'Year',
+          data: [
+           {id: 2000,text: "2000"},
+           {id: 2001,text: "2001"},
+           {id: 2002,text: "2002"},
+           {id: 2003,text: "2003"},
+           {id: 2004,text: "2004"},
+           {id: 2005,text: "2005"},
+           {id: 2006,text: "2006"},
+           {id: 2007,text: "2007"},
+           {id: 2008,text: "2008"},
+           {id: 2009,text: "2009"},
+           {id: 2010,text: "2010"},
+           {id: 2011,text: "2011"},
+           {id: 2012,text: "2012"},
+           {id: 2013,text: "2013"}]
+          })
+        .on('change', function(e) {
+
+           var url = '/api/1/autocomplete/manufacturer?fq=year:' + e.val;
+
+          $.ajax(url)
+          .done(function(data, textStatus, jqXHR) {
+            var selectData = $.map(data.results, function(n, i) {
+              return {id: n.value, text: n.value + ' (' + n.count + ')'}
+            });
+
+            $("#make").select2({
+              placeholder: 'Select a Make',
+              data: selectData
+            });
+          });
+
+        });
+
+        $("#make").select2({
+          placeholder: 'Select a Year first',
+          data: []
+        })
+        .on('change', function(e) {
+           var url = '/api/1/autocomplete/model?fq=manufacturer:"' + e.val + '"'
+            + '&fq=year:' + $('#year').val();
+
+          $.ajax(url)
+          .done(function(data, textStatus, jqXHR) {
+            var selectData = $.map(data.results, function(n, i) {
+              return {id: n.value, text: n.value + ' (' + n.count + ')'}
+            });
+
+            $("#model").select2({
+              placeholder: 'Select a Model',
+              data: selectData
+            });
+          });
+
+        });
+
+        $("#model").select2({
+          placeholder: 'Select a Make first',
+          data: []
+        })
+        .on('change', function(e) {
+          var url = '/api/1/search?q=*:*'
+           + '&fq=model:"' + e.val + '"'
+           + '&fq=manufacturer:"' + $('#make').val()+ '"'
+           + '&fq=year:' + $('#year').val()
+           + '&rows=1000';
+
+          $.ajax(url).done(function(data, textStatus, jqXHR) {
+
+            $('#results').empty();
+            $.map(data.results, function(n, i) {
+              $('#results')
+                .append($(resultsTemplate(n))
+                  .on('click', n, function(e) {
+
+                      $('#compare')
+                      .append(compareTemplate(e.data));
+
+
+                }));
+
+            });
+
+          });
+
+        });
+
+
+
+      var resultsTemplate = Handlebars.compile($('#results-item-template').html());
+      var compareTemplate = Handlebars.compile($('#compare-item-template').html());
+    });
+    </script>
+
+  </body>
+</html>

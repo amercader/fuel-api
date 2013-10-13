@@ -1,0 +1,10 @@
+.selects .select {
+  width: 180px;
+}
+
+#results > div {
+  border-top: 1px solid gray;
+  padding: 10px 0;
+  cursor: pointer;
+
+}
