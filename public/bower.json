@@ -1,0 +1,27 @@
+{
+  "name": "fuel",
+  "version": "0.0.1",
+  "authors": [
+    "amercader <amercadero@gmail.com>"
+  ],
+  "description": "Compare car emissions and fuel consumption data",
+  "keywords": [
+    "car",
+    "fuel",
+    "emissions"
+  ],
+  "dependencies": {
+    "bootstrap": "3.0.0",
+    "handlebars": "1.0.0",
+    "select2": "3.4.3"
+  },
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
