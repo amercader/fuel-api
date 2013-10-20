@@ -23,11 +23,5 @@ app.get('/api/:version/autocomplete', apiMiddleware, function(req, res){
 
 app.get('/api/:version/autocomplete/:field', apiMiddleware, api.autocomplete);
 
-app.get('/browse', function(req, res){
-  res.sendfile(__dirname + '/public/browse.html');
-});
-
-app.use(express.static('public'));
-
 app.listen(3000);
 console.log('Listening to port 3000');
