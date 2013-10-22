@@ -8,7 +8,7 @@ app.get('/api', function(req, res){
   res.send({versions: [1]});
 });
 
-var apiMiddleware = [api.checkVersion, api.debug];
+var apiMiddleware = [api.CORS, api.checkVersion, api.debug];
 
 app.get('/api/:version', apiMiddleware, function(req, res){
   res.send({methods: ['search', 'autocomplete']});

@@ -1,6 +1,8 @@
 var util = require('util');
 var solr = require('solr-client');
 
+var config = require('./config.js');
+
 var versions = ['1'];
 var _debug = false;
 
@@ -8,6 +10,14 @@ exports.checkVersion = function(req, res, next) {
   if (versions.indexOf(req.params.version) == -1) {
     res.send('404', {error: {type: 'api', msg: 'Supported API versions are:' + versions}});
   }
+
+  next();
+}
+
+exports.CORS = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', config.api.allowedCORSDomains);
+  res.header('Access-Control-Allow-Methods', 'GET');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
 
   next();
 }
