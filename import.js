@@ -3,6 +3,7 @@ var path = require('path');
 var csv = require('csv');
 var mongodb = require('mongodb');
 
+var config = require('./config.js');
 
 var file = process.argv[2];
 
@@ -18,8 +19,7 @@ if (!fs.existsSync(file)) {
 
 
 var mongoClient = mongodb.MongoClient;
-var url = 'mongodb://localhost:27017/fuel';
-
+var url = config.mongodb.url;
 
 fs.readFile(file, 'utf8', function(err, data) {
   metadata = JSON.parse(data);

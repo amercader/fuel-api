@@ -2,11 +2,13 @@ var util = require('util');
 var mongodb = require('mongodb');
 var solr = require('solr-client');
 
+var config = require('./config.js');
+
 var command = process.argv[2] || 'import';
 
 // Create clients
 var mongoClient = mongodb.MongoClient;
-var solrClient = solr.createClient('localhost', '8080', 'fuel');
+var solrClient = solr.createClient(config.solr.host, config.solr.port, config.solr.core);
 
 
 if (command == 'import') {
@@ -42,7 +44,7 @@ function _import() {
 
 
   console.time('index');
-  var url = 'mongodb://localhost:27017/fuel';
+  var url = config.mongodb.url;
 
   mongoClient.connect(url, function(err, db) {
     if(err) throw err;
